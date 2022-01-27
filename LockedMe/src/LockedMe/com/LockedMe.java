@@ -3,23 +3,64 @@ package LockedMe.com;
 import java.io.*;
 import java.util.*;
 
-public class LockedMe {
+public class LockedMe 
+{
 	
 	static final String projFilesPath = "C:\\LockedMeFiles";
 	static final String errMsg = "Some error occured. Please contact admin@lockedme.com";
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		searchFiles();
 
-	}
+		
+	int ch;
+	Scanner  obj = new Scanner(System.in);
+	boolean tryAgain = true;
 	
+	while(tryAgain)
+	{
+		try 
+		{
+		    do
+		    {
+		    	displayMenu();
+		    	System.out.println("\n\t Enter your choice");
+	    		ch = Integer.parseInt(obj.nextLine());
+	 
+	    		
+	            switch(ch)
+	            {
+		            case 1:getAllFiles();
+		            break;
+		            case 2:createFile(obj);
+		            break;
+		            case 3:deleteFile(obj);
+		            break;
+		            case 4:searchFiles(obj);
+		            break;
+		            case 5:System.out.println("Good bye!!");
+		            System.exit(0);
+		            break;
+		            default:System.out.println("Invalid option, please enter the correct option");
+		            break;
+	            }
+	          }
+		      while(true);
+		}
+		
+		catch (Exception Ex)
+		{
+			System.out.println(errMsg);
+		}
+	}
+}
+	   
+	
+	/**
+	 * This method is used to display the options
+	 */
 	public static void displayMenu()
 	{
-		
-		Scanner obj = new Scanner(System.in);
-		
-		System.out.println("\t\t****************************************************");
+		System.out.println("\n\n\t\t****************************************************");
 		System.out.println("\t\t*                                                  *");
 		System.out.println("\t\t*              Welcome to LockedMe.com             *");
 		System.out.println("\t\t*                                                  *");
@@ -31,9 +72,6 @@ public class LockedMe {
 		System.out.println("\t 3. Delete a file");
 		System.out.println("\t 4. Search a file");
 		System.out.println("\t 5. Exit");
-		System.out.println("\n\t Enter your choice");
-		
-		
 	}
 	
 	/**
@@ -68,21 +106,85 @@ public class LockedMe {
 				
 	}
 	
-	public static void createFile()
+	/**
+	 * This method will create the files under project folder
+	 */
+	public static void createFile(Scanner obj)
 	{
+		
+		try
+		{
+		//Scanner obj = new Scanner(System.in);
+		
+		String ow="Y";
+		
+		String fileName;
+		System.out.println("Please enter the file name to be created:");
+		fileName=obj.nextLine();
+		
+		File file = new File (projFilesPath+"\\"+ fileName);
+	
+		if (file.exists())
+		{
+			boolean cond = true;
+			while (cond == true)
+			{
+			System.out.println("File exists with the same name," +fileName+" Do you want to proceed (Y/N)");
+			ow=obj.nextLine();
+				if (ow.equals("N"))
+				{
+					System.out.println("Skipping the file creation due to overlapping file name, good bye");
+					cond = false;
+				}
+				else if (ow.equals("Y"))
+				{
+					System.out.println("Will proceed with overwriting the existing file");
+					cond = false;
+				}
+				else
+					System.out.println("Please enter the correct input");
+				}	
+		}
+		
+		if (ow.equals("Y"))
+		{
+			int linesCount;
+			System.out.println("Please enter the line count of the file:");
+			linesCount=Integer.parseInt(obj.nextLine());
+			FileWriter myWriter = new FileWriter(projFilesPath+"\\"+ fileName);
+				for (int i=1;i<=linesCount;i++)
+				{
+					System.out.println("Please enter the text of line "+i+" for the new file "+fileName);
+					myWriter.write(obj.nextLine()+"\n");
+				}
+			System.out.println("File created successully");
+			myWriter.close();
+			}
+			
+		}
+		
+		catch (Exception Ex)
+		{
+			System.out.println(errMsg);
+		}
+		finally
+		{
+			
+		}		
 		
 	}
 	
 	/**
-	 * This function will delete the file from the project folder
+	 * This method will delete the file from the project folder
 	 * based on the user input
 	 */
-	public static void deleteFile()
+	public static void deleteFile(Scanner obj)
 	{
 
 		String fileName;
-		Scanner obj = new Scanner(System.in);
-		
+		String conf;
+		boolean cond = true;
+				
 		try
 		{
 		
@@ -93,14 +195,32 @@ public class LockedMe {
 		
 			if(file.exists())
 			{
-				if(file.delete())
+				while (cond==true)
 				{
-					System.out.println("Mentioned file delete successfully");
-				}
+				System.out.println("Not too late, delete "+fileName+" (Y/N)?");
+				conf=obj.nextLine();
+					if (conf.equals("N"))
+					{
+						System.out.println("Skipping the deletion of file, "+fileName+".U-Turn isnt always bad. good bye");
+						cond = false;
+					}
+					else if (conf.equals("Y"))
+					{
+						if(file.delete())
+						{
+							System.out.println("Mentioned file, "+fileName+" deleted successfully");
+							cond = false;
+						}
+					}
+					else
+					{
+						System.out.println("Please enter the correct input");
+					}	
+				}				
 			}
 			else
 			{
-					System.out.println("Not able to delete the mentioned file, File not found");
+					System.out.println("Not able to delete the mentioned file, "+fileName+" File not found. Check the list of files \n");
 					getAllFiles();
 			}	
 		}
@@ -108,20 +228,16 @@ public class LockedMe {
 		{
 			System.out.println(errMsg);
 		}
-		finally
-		{
-			obj.close();
-		}
+		
 	}
 	
 	/**
 	 *  This method is used to search for the file 
 	 *  under the project directory
 	 */
-	public static void searchFiles()
+	public static void searchFiles(Scanner obj)
 	{
 		String fileName;
-		Scanner obj = new Scanner(System.in);
 		File folder = new File(projFilesPath);
 		File[] listOfFiles = folder.listFiles();
 		
@@ -143,16 +259,15 @@ public class LockedMe {
 		if(FNF==1)
 			System.out.println("File "+fileName+" is not available under project directory");
 		
-			
+		//obj1.close();
+		//System.out.println("obj closed");
+		
 		}
 		catch (Exception Ex)
 		{
 			System.out.println(errMsg);
 		}
-		finally
-		{
-			obj.close();
-		}		
+		
 	}
 
 }
